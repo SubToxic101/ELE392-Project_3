@@ -4,13 +4,8 @@ Servo mainServo;
 
 void setup() {
   // put your setup code here, to run once:
-<<<<<<< Updated upstream
-  pinMode(servoPin, OUTPUT);
-  mainServo.attach(servoPin, 500, 2500);
-=======
   pinMode(A2, OUTPUT);
   mainServo.attach(A2, 500, 2500);
->>>>>>> Stashed changes
   delay(3000);
 }
 
@@ -22,5 +17,5 @@ void loop() {
   //mainServo.write(180);
   mainServo.writeMicroseconds(2400);
   delay(1000);
-  
+  Serial.println("running");
 }
