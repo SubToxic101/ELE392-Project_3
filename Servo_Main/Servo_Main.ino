@@ -5,14 +5,17 @@ Servo mainServo;
 void setup() {
   // put your setup code here, to run once:
   pinMode(servoPin, OUTPUT);
-  mainServo.attach(pin, 500, 2500);
+  mainServo.attach(servoPin, 500, 2500);
   delay(3000);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  servo.write(0);
+  //mainServo.write(0);
+  mainServo.writeMicroseconds(600);
   delay(1000);
-  servo.write(180);
+  //mainServo.write(180);
+  mainServo.writeMicroseconds(2400);
   delay(1000);
+  
 }
