@@ -19,7 +19,8 @@ void setup() {
   servo1.attach(A2, 500, 2500);
   servo2.attach(A3, 500, 2500);
 
-  servo1.write(0);
+  servo1.write(75);
+  servo2.write(0);
   Serial.begin(115200);
   Serial.println("Orientation Sensor Test"); Serial.println("");
   /* Initialise the sensor */
@@ -47,7 +48,7 @@ void loop() {
   }
   */
   
-  set_servo = 160;
+  set_servo = 180;
   /* Get a new sensor event */
   bno.getEvent(&event);
 
@@ -78,8 +79,10 @@ void loop() {
   Serial.print(t);
   Serial.print(", ");
   Serial.print(F(" "));
-  Serial.print((float)event.orientation.y);
+  //Serial.print((float)event.orientation.y);
+  Serial.print((float)event.orientation.x);
   Serial.println("");
-  servo1.write(set_servo);
+  //servo1.write(set_servo);
+  servo2.write(set_servo);
   delay(20);
 }
