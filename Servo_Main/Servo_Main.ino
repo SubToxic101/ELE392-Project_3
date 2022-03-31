@@ -18,13 +18,16 @@ double servo2In = 0;
 double servo2Out = 0;
 double Setpoint_2 = 0;
 
-int Kp1 = -355;
-int Ki1 = -88.1;
-int Kd1 = -20.9;
+double anglDeflect = 0;
+double anglFix = 0;
 
-int Kp2 = 395;
-int Ki2 = 172;
-int Kd2 = 14.3;
+double Kp1 = 0;
+double Ki1 = 3;
+double Kd1 = 0.008;
+
+double Kp2 = 0.2;
+double Ki2 = 3;
+double Kd2 = 0;
 
 
 PID servoPitch(&servo1In, &servo1Out, &Setpoint_1, Kp1, Ki1, Kd1, DIRECT);
@@ -37,8 +40,8 @@ void setup() {
   pinMode(A2, OUTPUT);
   pinMode(A3, OUTPUT);
 
-  Setpoint_1 = 75;
-  Setpoint_2 = 0;
+  Setpoint_1 = 0;
+  Setpoint_2 = 270;
   servo1.attach(A2, 500, 2500);
   servo2.attach(A3, 500, 2500);
 
@@ -51,13 +54,15 @@ void setup() {
     while(1);
   }
   bno.setExtCrystalUse(true);
-  bno.getEvent(&event);
   servoPitch.SetSampleTime(22);
   servoYaw.SetSampleTime(22);
-  servoPitch.SetOutputLimits(0, 180);
-  servoYaw.SetOutputLimits(0, 180);
+  //servoPitch.SetOutputLimits(0, 180);
+  //servoYaw.SetOutputLimits(0, 180);
   servoPitch.SetMode(AUTOMATIC);
   servoYaw.SetMode(AUTOMATIC);
+  servo1.write(75);
+  servo2.write(0);
+  bno.getEvent(&event);
   delay(3000);
 }
 
@@ -92,6 +97,12 @@ void loop() {
 
   servo1In = (double)event.orientation.y;
   servo2In = (double)event.orientation.x;
+
+  if (servo2Out < 90 & servo2In < 90) {
+    servo2In = servo2In + 360;
+  }
+  Serial.print("servo2In:  ");
+  Serial.println(servo2In);
   servoPitch.Compute();
   servoYaw.Compute();
 
