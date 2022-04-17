@@ -10,6 +10,7 @@ int set_servo = 0;
 int testset = 0;
 int t = 0;
 int firstprint = 0;
+int loopCount = 0;
 sensors_event_t event;
 double servo1In = 0;
 double servo1Out = 0;
@@ -18,19 +19,20 @@ double servo2In = 0;
 double servo2Out = 0;
 double Setpoint_2 = 0;
 
-double anglDeflect = 0;
+double anglStart = 0;
 double anglFix = 0;
 
 double Kp1 = 0;
 double Ki1 = 3;
 double Kd1 = 0.008;
 
-double Kp2 = 0.2;
-double Ki2 = 3;
+double Kp2 = 1;
+double Ki2 = 0;
 double Kd2 = 0;
 
 
 PID servoPitch(&servo1In, &servo1Out, &Setpoint_1, Kp1, Ki1, Kd1, DIRECT);
+
 PID servoYaw(&servo2In, &servo2Out, &Setpoint_2, Kp2, Ki2, Kd2, DIRECT);
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
@@ -40,8 +42,8 @@ void setup() {
   pinMode(A2, OUTPUT);
   pinMode(A3, OUTPUT);
 
-  Setpoint_1 = 0;
-  Setpoint_2 = 270;
+  Setpoint_1 = 0.0;
+  Setpoint_2 = 180.0;
   servo1.attach(A2, 500, 2500);
   servo2.attach(A3, 500, 2500);
 
@@ -54,15 +56,17 @@ void setup() {
     while(1);
   }
   bno.setExtCrystalUse(true);
-  servoPitch.SetSampleTime(22);
-  servoYaw.SetSampleTime(22);
+  servoPitch.SetSampleTime(50);
+  servoYaw.SetSampleTime(50);
   //servoPitch.SetOutputLimits(0, 180);
-  //servoYaw.SetOutputLimits(0, 180);
+  servoYaw.SetOutputLimits(-500, 500);
   servoPitch.SetMode(AUTOMATIC);
   servoYaw.SetMode(AUTOMATIC);
   servo1.write(75);
   servo2.write(0);
+  delay(1000);
   bno.getEvent(&event);
+  anglStart = (double)event.orientation.x;
   delay(3000);
 }
 
@@ -98,22 +102,33 @@ void loop() {
   servo1In = (double)event.orientation.y;
   servo2In = (double)event.orientation.x;
 
-  if (servo2Out < 90 & servo2In < 90) {
-    servo2In = servo2In + 360;
+  /*
+  if (servo2In < anglStart) {
+    servo2In = servo2In + (360-anglStart);
   }
+  else if (servo2In > anglStart) {
+    servo2In = 360 - (anglStart + (360-servo2In));
+  }
+  */
+ 
+  Serial.print("anglStart:  ");
+  Serial.println(anglStart);
   Serial.print("servo2In:  ");
   Serial.println(servo2In);
+  
   servoPitch.Compute();
   servoYaw.Compute();
+ 
+  
 
   Serial.println(servo1Out);
   Serial.println(servo2Out);
   servo1.write(servo1Out);
-  servo2.write(servo2Out);
+  servo2.write(180+servo2Out);
   
   if (firstprint == 0) {
     Serial.println("Starting....");
     firstprint = 1;
   }
-  delay(20);
+  delay(50);
 }
